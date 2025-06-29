@@ -18,21 +18,23 @@ from auth import hash_senha, verificar_senha, get_usuario_logado, logout
 templates = Jinja2Templates(directory="templates")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     criar_db_e_tabelas()
     yield
 
+
 app = FastAPI(lifespan=lifespan)
 
-# Troque para uma chave forte em produção!
 app.add_middleware(SessionMiddleware, secret_key="SUA_CHAVE_SUPER_SECRETA_AQUI")
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 def get_session():
     with Session(engine) as session:
         yield session
+
 
 def get_usuario_logado(request: Request, session: Session) -> Optional[Usuario]:
     user_id = request.session.get("user_id")
@@ -40,11 +42,6 @@ def get_usuario_logado(request: Request, session: Session) -> Optional[Usuario]:
         return None
     return session.get(Usuario, user_id)
 
-def verificar_senha(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-def hash_senha(password):
-    return pwd_context.hash(password)
 
 @app.get("/")
 def pagina_inicial(request: Request, session: Session = Depends(get_session)):
@@ -58,7 +55,6 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
     ).all()
     total = sum(c.quantidade for c in consumos)
 
-    # Ranking diário (nome e soma total ml)
     ranking_data = session.exec(
         select(Usuario.nome, Consumo.quantidade)
         .join(Consumo, Consumo.usuario_id == Usuario.id)
@@ -71,6 +67,7 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
     ranking = sorted(ranking_dict.items(), key=lambda x: x[1], reverse=True)
 
     return templates.TemplateResponse(
+        request,
         "index.html",
         {
             "request": request,
@@ -80,6 +77,7 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
             "ranking": ranking,
         },
     )
+
 
 @app.post("/registrar")
 def registrar_consumo(
@@ -98,9 +96,15 @@ def registrar_consumo(
 
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
+
 @app.get("/login")
 def login_get(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request, "erro": None})
+    return templates.TemplateResponse(
+        request,
+        "login.html",
+        {"request": request, "erro": None},
+    )
+
 
 @app.post("/login")
 def login_post(
@@ -112,19 +116,29 @@ def login_post(
     usuario = session.exec(select(Usuario).where(Usuario.email == email)).first()
     if not usuario or not verificar_senha(senha, usuario.senha_hash):
         return templates.TemplateResponse(
-            "login.html", {"request": request, "erro": "Email ou senha inválidos"}
+            request,
+            "login.html",
+            {"request": request, "erro": "Email ou senha inválidos"},
         )
+
     request.session["user_id"] = usuario.id
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+
 
 @app.get("/logout")
 def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
+
 @app.get("/registrar-usuario")
 def registrar_usuario_get(request: Request):
-    return templates.TemplateResponse("registrar.html", {"request": request, "erro": None})
+    return templates.TemplateResponse(
+        request,
+        "registrar.html",
+        {"request": request, "erro": None},
+    )
+
 
 @app.post("/registrar-usuario")
 def registrar_usuario_post(
@@ -137,8 +151,11 @@ def registrar_usuario_post(
     existe = session.exec(select(Usuario).where(Usuario.email == email)).first()
     if existe:
         return templates.TemplateResponse(
-            "registrar.html", {"request": request, "erro": "Email já cadastrado"}
+            request,
+            "registrar.html",
+            {"request": request, "erro": "Email já cadastrado"},
         )
+
     senha_hash = hash_senha(senha)
     usuario = Usuario(nome=nome, email=email, senha_hash=senha_hash)
     session.add(usuario)
