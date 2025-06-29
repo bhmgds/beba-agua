@@ -1,0 +1,58 @@
+# Ambiente virtual
+venv/
+
+# Variáveis de ambiente
+.env
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos SQLite (banco de dados local)
+*.sqlite3
+*.db
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.temp
+
+# Pasta de migrações Alembic (se usar)
+alembic/versions/
+
+# Diretórios de IDEs/editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Testes e cobertura
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Arquivos estáticos e compilados (caso use)
+staticfiles/
+*.egg-info/
+dist/
+build/
+
+# Arquivos do pipenv (se usar)
+Pipfile.lock
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+
+# arquivo apenas para dev
+
+gera.py
