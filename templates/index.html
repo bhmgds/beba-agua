@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Consumo de Água</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Olá, {{ usuario.nome }}!</h1>
+
+    <h2>Registro de Consumo de Água</h2>
+    <form method="post" action="/registrar">
+        <label for="quantidade">Quantidade ingerida (em ml):</label>
+        <input type="number" name="quantidade" id="quantidade" required>
+        <button type="submit">Registrar</button>
+    </form>
+
+    <h2>Hoje você ingeriu {{ total }} ml</h2>
+
+    {% if consumos %}
+        <h3>Registros de hoje:</h3>
+        <ul>
+            {% for c in consumos %}
+                <li>{{ c.quantidade }} ml às {{ c.data.strftime("%H:%M") }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum consumo registrado hoje ainda.</p>
+    {% endif %}
+
+    <h2>Ranking de Consumo de Hoje</h2>
+    {% if ranking %}
+        <ol>
+            {% for nome, quantidade in ranking %}
+                <li>{{ nome }} - {{ quantidade }} ml</li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>Nenhum consumo registrado por ninguém hoje ainda.</p>
+    {% endif %}
+
+    <p>
+        <a href="/logout">Sair</a>
+    </p>
+</body>
+</html>
