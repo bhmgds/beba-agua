@@ -1,0 +1,21 @@
+# Ambiente virtual
+venv/
+.env
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+
+# Arquivos de banco de dados SQLite (se quiser ignorar)
+*.sqlite3
+
+# Arquivos ocultos de sistema
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# arquivo apenas para dev
+
+gera.py

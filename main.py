@@ -13,7 +13,12 @@ from models import Usuario, Consumo
 from typing import Optional
 from passlib.context import CryptContext
 from auth import hash_senha, verificar_senha, get_usuario_logado, logout
+from dotenv import load_dotenv
+import os
 
+load_dotenv()  # carrega variáveis do .env
+
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 templates = Jinja2Templates(directory="templates")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -27,7 +32,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.add_middleware(SessionMiddleware, secret_key="SUA_CHAVE_SUPER_SECRETA_AQUI")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
