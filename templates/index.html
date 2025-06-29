@@ -1,46 +1,60 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Consumo de Água</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Beba Água - Controle Diário</title>
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-    <h1>Olá, {{ usuario.nome }}!</h1>
+  <header>
+    <!-- Logo SVG inline -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" stroke="#2196F3" stroke-width="4"/>
+        <path fill="#2196F3" d="M32 16c-5 8-9 12-9 20 0 5 4 9 9 9s9-4 9-9c0-8-4-12-9-20z"/>
+        <circle cx="32" cy="32" r="5" fill="#BBDEFB"/>
+      </svg>
+      <h1>Beba Água</h1>
+    </div>
+  </header>
 
-    <h2>Registro de Consumo de Água</h2>
-    <form method="post" action="/registrar">
-        <label for="quantidade">Quantidade ingerida (em ml):</label>
-        <input type="number" name="quantidade" id="quantidade" required>
-        <button type="submit">Registrar</button>
+  <main class="container">
+    <h2>Olá, {{ usuario.nome }}!</h2>
+
+    <form action="/registrar" method="post">
+      <label for="quantidade">Quantidade em ml:</label>
+      <input type="number" id="quantidade" name="quantidade" min="50" step="50" required />
+      <button type="submit">Registrar Consumo</button>
     </form>
 
-    <h2>Hoje você ingeriu {{ total }} ml</h2>
+    <section>
+      <h3>Consumo de Hoje</h3>
+      <p>Total: {{ total }} ml</p>
 
-    {% if consumos %}
-        <h3>Registros de hoje:</h3>
-        <ul>
-            {% for c in consumos %}
-                <li>{{ c.quantidade }} ml às {{ c.data.strftime("%H:%M") }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhum consumo registrado hoje ainda.</p>
-    {% endif %}
+      <ul>
+        {% for consumo in consumos %}
+          <li>{{ consumo.quantidade }} ml registrado em {{ consumo.data.strftime("%H:%M") if consumo.data else '' }}</li>
+        {% else %}
+          <li>Nenhum registro até agora.</li>
+        {% endfor %}
+      </ul>
+    </section>
 
-    <h2>Ranking de Consumo de Hoje</h2>
-    {% if ranking %}
-        <ol>
-            {% for nome, quantidade in ranking %}
-                <li>{{ nome }} - {{ quantidade }} ml</li>
-            {% endfor %}
-        </ol>
-    {% else %}
-        <p>Nenhum consumo registrado por ninguém hoje ainda.</p>
-    {% endif %}
+    <section class="ranking">
+      <h3>Ranking Diário</h3>
+      <ol>
+        {% for nome, quantidade in ranking %}
+          <li>{{ nome }} — {{ quantidade }} ml</li>
+        {% else %}
+          <li>Sem registros hoje.</li>
+        {% endfor %}
+      </ol>
+    </section>
+  </main>
 
-    <p>
-        <a href="/logout">Sair</a>
-    </p>
+  <footer>
+    Desenvolvido com 💧 por você e sua esposa.
+  </footer>
 </body>
 </html>
