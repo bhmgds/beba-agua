@@ -130,7 +130,7 @@ def login_post(
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 
-@app.get("/logout")
+@app.post("/logout")
 def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
