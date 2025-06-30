@@ -5,7 +5,8 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from sqlmodel import Session, select
 from contextlib import asynccontextmanager
-from datetime import date, datetime
+from datetime import datetime, time
+from zoneinfo import ZoneInfo  # ✅ Para timezone
 
 from database import engine, criar_db_e_tabelas
 from models import Usuario, Consumo
@@ -54,16 +55,27 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
     if not usuario:
         return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
-    hoje = datetime.today()
+    # ✅ Pegando data e hora com timezone
+    fuso = ZoneInfo("America/Sao_Paulo")
+    agora = datetime.now(fuso)
+
+    # ✅ Início e fim do dia para busca
+    inicio_dia = datetime.combine(agora.date(), time.min, tzinfo=fuso)
+    fim_dia = datetime.combine(agora.date(), time.max, tzinfo=fuso)
+
     consumos = session.exec(
-        select(Consumo).where(Consumo.usuario_id == usuario.id, Consumo.data == hoje)
+        select(Consumo).where(
+            Consumo.usuario_id == usuario.id,
+            Consumo.data >= inicio_dia,
+            Consumo.data <= fim_dia
+        )
     ).all()
     total = sum(c.quantidade for c in consumos)
 
     ranking_data = session.exec(
         select(Usuario.nome, Consumo.quantidade)
         .join(Consumo, Consumo.usuario_id == Usuario.id)
-        .where(Consumo.data == hoje)
+        .where(Consumo.data >= inicio_dia, Consumo.data <= fim_dia)
     ).all()
 
     ranking_dict = {}
@@ -94,8 +106,11 @@ def registrar_consumo(
     if not usuario:
         return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
-    hoje = datetime.today()
-    consumo = Consumo(usuario_id=usuario.id, quantidade=quantidade, data=hoje)
+    # ✅ Agora com fuso horário
+    fuso = ZoneInfo("America/Sao_Paulo")
+    agora = datetime.now(fuso)
+
+    consumo = Consumo(usuario_id=usuario.id, quantidade=quantidade, data=agora)
     session.add(consumo)
     session.commit()
 
