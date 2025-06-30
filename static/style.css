@@ -9,6 +9,7 @@ body {
     color: #212121; /* quase preto */
     margin: 0;
     padding: 0;
+    line-height: 1.5;
 }
 
 header {
@@ -18,36 +19,47 @@ header {
     text-align: center;
     font-weight: 600;
     font-size: 1.5rem;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
 }
 
 h1, h2, h3 {
     color: #2196F3; /* azul água */
+    margin-top: 0;
 }
 
 button {
     background-color: #2196F3; /* azul água */
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
+    font-size: 1rem;
     transition: background-color 0.3s ease;
+    user-select: none;
 }
 
-button:hover {
+button:hover, button:focus {
     background-color: #1976D2; /* azul mais escuro */
+    outline: none;
 }
 
 input, select {
-    padding: 0.5rem;
+    padding: 0.75rem;
     border: 1px solid #B0BEC5; /* cinza claro */
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 1rem;
     width: 100%;
     box-sizing: border-box;
     margin-top: 0.5rem;
     margin-bottom: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+input:focus, select:focus {
+    border-color: #2196F3;
+    outline: none;
 }
 
 .container {
@@ -55,8 +67,8 @@ input, select {
     margin: 2rem auto;
     padding: 2rem;
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
 }
 
 .ranking {
@@ -68,11 +80,13 @@ input, select {
 .ranking-item {
     display: flex;
     justify-content: space-between;
-    padding: 0.25rem 0;
+    padding: 0.5rem 0;
     font-weight: 600;
     color: #1976D2;
+    font-size: 1rem;
 }
 
+/* Footer */
 footer {
     text-align: center;
     padding: 1rem;
@@ -81,10 +95,59 @@ footer {
     margin-top: 2rem;
 }
 
-/* Responsividade básica */
-@media (max-width: 600px) {
+/* RESPONSIVIDADE AVANÇADA */
+@media (max-width: 768px) {
+    header {
+        font-size: 1.3rem;
+        padding: 1rem;
+    }
+    
+    button {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .ranking-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .container {
+        padding: 1.5rem;
+        margin: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 16px; /* maior legibilidade */
+    }
+
+    header {
+        font-size: 1.1rem;
+        padding: 0.75rem 1rem;
+    }
+
+    h1, h2, h3 {
+        font-size: 1.2rem;
+    }
+
+    button {
+        font-size: 1.2rem;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    input, select {
+        font-size: 1.1rem;
+        padding: 1rem;
+    }
+
     .container {
         margin: 1rem;
         padding: 1rem;
+        box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
     }
 }
