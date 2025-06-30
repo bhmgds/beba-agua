@@ -68,8 +68,12 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
         )
     ).all()
 
+    consumos_formatados = []
     for consumo in consumos:
-        consumo.data_formatada = consumo.data.astimezone(fuso).strftime("%H:%M")
+        consumos_formatados.append({
+            "quantidade": consumo.quantidade,
+            "data_formatada": consumo.data.astimezone(fuso).strftime("%H:%M"),
+        })
 
     total = sum(c.quantidade for c in consumos)
 
@@ -90,13 +94,11 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
         {
             "request": request,
             "usuario": usuario,
-            "consumos": consumos,
+            "consumos": consumos_formatados,
             "total": total,
             "ranking": ranking,
         },
     )
-
-
 
 @app.post("/registrar")
 def registrar_consumo(
