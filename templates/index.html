@@ -57,7 +57,7 @@
 
       <ul>
         {% for consumo in consumos %}
-          <li>{{ consumo.quantidade }} ml registrado em {{ consumo.data.strftime("%H:%M") if consumo.data else '' }}</li>
+          <li>{{ consumo.quantidade }} ml registrado em {{ consumo.data_formatada }}</li>
         {% else %}
           <li>Nenhum registro até agora.</li>
         {% endfor %}

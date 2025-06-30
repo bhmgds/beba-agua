@@ -55,11 +55,8 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
     if not usuario:
         return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
-    # ✅ Pegando data e hora com timezone
     fuso = ZoneInfo("America/Sao_Paulo")
     agora = datetime.now(fuso)
-
-    # ✅ Início e fim do dia para busca
     inicio_dia = datetime.combine(agora.date(), time.min, tzinfo=fuso)
     fim_dia = datetime.combine(agora.date(), time.max, tzinfo=fuso)
 
@@ -67,9 +64,13 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
         select(Consumo).where(
             Consumo.usuario_id == usuario.id,
             Consumo.data >= inicio_dia,
-            Consumo.data <= fim_dia
+            Consumo.data <= fim_dia,
         )
     ).all()
+
+    for consumo in consumos:
+        consumo.data_formatada = consumo.data.astimezone(fuso).strftime("%H:%M")
+
     total = sum(c.quantidade for c in consumos)
 
     ranking_data = session.exec(
@@ -94,6 +95,7 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
             "ranking": ranking,
         },
     )
+
 
 
 @app.post("/registrar")
