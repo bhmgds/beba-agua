@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from sqlmodel import Session, select
 from contextlib import asynccontextmanager
-from datetime import date
+from datetime import date, datetime
 
 from database import engine, criar_db_e_tabelas
 from models import Usuario, Consumo
@@ -54,7 +54,7 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
     if not usuario:
         return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
-    hoje = date.today()
+    hoje = datetime.today()
     consumos = session.exec(
         select(Consumo).where(Consumo.usuario_id == usuario.id, Consumo.data == hoje)
     ).all()
@@ -94,7 +94,7 @@ def registrar_consumo(
     if not usuario:
         return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
-    hoje = date.today()
+    hoje = datetime.today()
     consumo = Consumo(usuario_id=usuario.id, quantidade=quantidade, data=hoje)
     session.add(consumo)
     session.commit()
