@@ -12,18 +12,49 @@ body {
     line-height: 1.5;
 }
 
+
+/* Header com layout flex para alinhar itens */
 header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     background-color: #2196F3; /* azul água */
     color: #FFFFFF;
     padding: 1rem 2rem;
-    text-align: center;
     font-weight: 600;
     font-size: 1.5rem;
     box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
 }
 
+/* Container esquerdo do header: ícone + título */
+header > div {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Tamanho e ajuste do ícone SVG no header */
+header svg {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+/* Ajuste do título no header */
+header h1, h4 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+h4 {
+    color: #ffffff; /* azul água */
+    margin-top: 0;
+}
+
 h1, h2, h3 {
-    color: #2196F3; /* azul água */
+    color: #4383b8; /* azul água */
     margin-top: 0;
 }
 
@@ -150,4 +181,37 @@ footer {
         padding: 1rem;
         box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
     }
+}
+
+/* Botão logout estilizado */
+button.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: #e53935;
+    border: none;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 2px 6px rgb(229 57 53 / 0.5);
+    transition: background-color 0.3s ease;
+}
+
+button.logout-btn:hover {
+    background-color: #b71c1c;
+}
+
+/* Ícone SVG dentro do botão logout herda a cor branca */
+button.logout-btn svg {
+    stroke: currentColor;
+    width: 18px;
+    height: 18px;
+}
+
+/* Remove margem padrão do form logout */
+form.logout-form {
+    margin: 0;
 }

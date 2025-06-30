@@ -8,18 +8,38 @@
 </head>
 <body>
   <header>
-    <!-- Logo SVG inline -->
-    <div style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 64 64" fill="none">
-        <circle cx="32" cy="32" r="30" stroke="#2196F3" stroke-width="4"/>
-        <path fill="#2196F3" d="M32 16c-5 8-9 12-9 20 0 5 4 9 9 9s9-4 9-9c0-8-4-12-9-20z"/>
-        <circle cx="32" cy="32" r="5" fill="#BBDEFB"/>
+    <div>
+      <!-- Ícone garrafa -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" fill="none" >
+        <defs>
+          <linearGradient id="bottleGradientHeader" x1="32" y1="12" x2="32" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#42A5F5"/>
+            <stop offset="100%" stop-color="#1565C0"/>
+          </linearGradient>
+          <filter id="shadowHeader" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+            <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0D47A1" flood-opacity="0.5"/>
+          </filter>
+        </defs>
+
+        <rect 
+          x="14" y="7" width="36" height="50" rx="10" ry="10" 
+          fill="none" stroke="#FFD600" stroke-width="2" 
+          filter="url(#shadowHeader)"
+        />
+        <rect x="20" y="12" width="24" height="36" rx="8" ry="8" fill="url(#bottleGradientHeader)" filter="url(#shadowHeader)" stroke="#0D47A1" stroke-width="2"/>
+        <rect x="26" y="6" width="12" height="8" rx="2" ry="2" fill="#1976D2" stroke="#0D47A1" stroke-width="1.5"/>
+        <line x1="32" y1="20" x2="32" y2="44" stroke="white" stroke-width="3" stroke-linecap="round" stroke-opacity="0.7"/>
+        <line x1="40" y1="22" x2="40" y2="44" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
+        <path d="M24 20 Q22 32 24 44" stroke="white" stroke-width="3" stroke-linecap="round" stroke-opacity="0.3" fill="none"/>
       </svg>
-      <h1>Beba Água</h1>
+      <h4>Beba Água</h4>
     </div>
-        <form action="/logout" method="post" style="margin:0;">
-            <button type="submit" style="background:none; border:none; color:#fff; cursor:pointer; font-weight:600; font-size:1rem; padding:0;">Logout</button>
-        </form>
+
+    <form action="/logout" method="post" class="logout-form">
+      <button type="submit" class="logout-btn" aria-label="Logout">
+        Logout
+      </button>
+    </form>
   </header>
 
   <main class="container">

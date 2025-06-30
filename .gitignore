@@ -56,3 +56,7 @@ Pipfile.lock
 # arquivo apenas para dev
 
 gera.py
+teste.css
+teste.html
+teste.js
+banco.db
