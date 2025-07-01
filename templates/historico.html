@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico | Beba Água{% endblock %}
+
+{% block content %}
+  <h2>Histórico de Consumo</h2>
+
+  {% if consumos %}
+    <ul>
+      {% for c in consumos %}
+        <li>{{ c.quantidade }} ml em {{ c.data_hora }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Você ainda não registrou nenhum consumo.</p>
+  {% endif %}
+{% endblock %}

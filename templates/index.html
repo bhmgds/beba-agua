@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <div>
+    <div class="logo">
       <!-- Ícone garrafa -->
       <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" fill="none" >
         <defs>
@@ -35,11 +35,20 @@
       <h4>Beba Água</h4>
     </div>
 
-    <form action="/logout" method="post" class="logout-form">
-      <button type="submit" class="logout-btn" aria-label="Logout">
-        Logout
+    <nav class="hamburguer-nav">
+      <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menu" aria-expanded="false">
+        ☰
       </button>
-    </form>
+      <div id="menu-content" class="menu-content" aria-hidden="true">
+        <a href="/">Início</a>
+        <a href="/historico">Histórico</a>
+        <!-- <a href="/ranking-periodo?dias=7">Ranking Semanal</a>
+        <a href="/ranking-periodo?dias=30">Ranking Mensal</a> -->
+        <form action="/logout" method="post" class="logout-form">
+          <button type="submit" class="logout-btn" aria-label="Logout">Logout</button>
+        </form>
+      </div>
+    </nav>
   </header>
 
   <main class="container">
@@ -52,7 +61,7 @@
     </form>
 
     <section>
-      <h3>Consumo de Hoje</h3>
+      <h3>Consumo de Hoje — {{ data_hoje }}</h3>
       <p>Total: {{ total }} ml</p>
 
       <ul>
@@ -79,5 +88,29 @@
   <footer>
     Hidrate-se!
   </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("menu-toggle");
+      const menu = document.getElementById("menu-content");
+
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = menu.classList.toggle("show");
+        toggle.setAttribute("aria-expanded", isOpen);
+        menu.setAttribute("aria-hidden", !isOpen);
+      });
+
+      document.addEventListener("click", () => {
+        menu.classList.remove("show");
+        toggle.setAttribute("aria-expanded", false);
+        menu.setAttribute("aria-hidden", true);
+      });
+
+      menu.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    });
+  </script>
 </body>
 </html>
