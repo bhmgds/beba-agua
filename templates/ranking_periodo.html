@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico | Beba Água{% endblock %}
+
+{% block content %}
+  <h2>Histórico do dia {{ data_alvo }}</h2>
+
+  {% if consumos %}
+    <ul>
+      {% for c in consumos %}
+        <li>{{ c.quantidade }} ml às {{ c.hora }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Sem registros para este dia.</p>
+  {% endif %}
+{% endblock %}

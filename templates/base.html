@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Beba Água{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <!-- SVG da garrafa omitido para brevidade -->
+      <h4>Beba Água</h4>
+    </div>
+
+    <nav class="hamburguer-nav">
+      <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+      <div id="menu-content" class="menu-content" aria-hidden="true">
+        <a href="/">Início</a>
+        <a href="/historico">Histórico</a>
+        <!-- <a href="/ranking-periodo?dias=7">Ranking Semanal</a>
+        <a href="/ranking-periodo?dias=30">Ranking Mensal</a> -->
+        <form action="/logout" method="post" class="logout-form">
+          <button type="submit" class="logout-btn">Logout</button>
+        </form>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>Hidrate-se!</footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("menu-toggle");
+      const menu = document.getElementById("menu-content");
+
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = menu.classList.toggle("show");
+        toggle.setAttribute("aria-expanded", isOpen);
+        menu.setAttribute("aria-hidden", !isOpen);
+      });
+
+      document.addEventListener("click", () => {
+        menu.classList.remove("show");
+        toggle.setAttribute("aria-expanded", false);
+        menu.setAttribute("aria-hidden", true);
+      });
+
+      menu.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    });
+  </script>
+</body>
+</html>

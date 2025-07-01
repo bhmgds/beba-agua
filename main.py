@@ -72,7 +72,7 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
     for consumo in consumos:
         consumos_formatados.append({
             "quantidade": consumo.quantidade,
-            "data_formatada": consumo.data.astimezone(fuso).strftime("%H:%M"),
+            "data_formatada": consumo.data.astimezone(fuso).strftime("%d/%m/%Y %H:%M"),
         })
 
     total = sum(c.quantidade for c in consumos)
@@ -88,6 +88,8 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
         ranking_dict[nome] = ranking_dict.get(nome, 0) + qtd
     ranking = sorted(ranking_dict.items(), key=lambda x: x[1], reverse=True)
 
+    data_hoje_formatada = agora.strftime("%d/%m/%Y")
+
     return templates.TemplateResponse(
         request,
         "index.html",
@@ -97,8 +99,10 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
             "consumos": consumos_formatados,
             "total": total,
             "ranking": ranking,
+            "data_hoje": data_hoje_formatada,
         },
     )
+
 
 @app.post("/registrar")
 def registrar_consumo(
@@ -191,7 +195,6 @@ def registrar_usuario_post(
 @app.get("/historico")
 def historico(
     request: Request,
-    dias_atras: int = Query(1, ge=1, le=30),
     session: Session = Depends(get_session),
 ):
     usuario = get_usuario_logado(request, session)
@@ -199,21 +202,18 @@ def historico(
         return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
     fuso = ZoneInfo("America/Sao_Paulo")
-    hoje = datetime.now(fuso).date()
-    data_alvo = hoje - timedelta(days=dias_atras)
-    inicio = datetime.combine(data_alvo, time.min, tzinfo=fuso)
-    fim = datetime.combine(data_alvo, time.max, tzinfo=fuso)
 
     consumos = session.exec(
-        select(Consumo).where(
-            Consumo.usuario_id == usuario.id,
-            Consumo.data >= inicio,
-            Consumo.data <= fim,
-        )
+        select(Consumo)
+        .where(Consumo.usuario_id == usuario.id)
+        .order_by(Consumo.data.desc())  # ordena do mais recente para o mais antigo
     ).all()
 
     consumos_formatados = [
-        {"quantidade": c.quantidade, "hora": c.data.astimezone(fuso).strftime("%H:%M")}
+        {
+            "quantidade": c.quantidade,
+            "data_hora": c.data.astimezone(fuso).strftime("%d/%m/%Y %H:%M")
+        }
         for c in consumos
     ]
 
@@ -223,43 +223,43 @@ def historico(
         {
             "request": request,
             "consumos": consumos_formatados,
-            "data_alvo": data_alvo.strftime("%d/%m/%Y"),
         },
     )
 
-@app.get("/ranking-periodo")
-def ranking_periodo(
-    request: Request,
-    dias: int = Query(7, ge=1, le=31),
-    session: Session = Depends(get_session),
-):
-    usuario = get_usuario_logado(request, session)
-    if not usuario:
-        return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
-    fuso = ZoneInfo("America/Sao_Paulo")
-    agora = datetime.now(fuso)
-    inicio = datetime.combine(agora.date() - timedelta(days=dias - 1), time.min, tzinfo=fuso)
-    fim = datetime.combine(agora.date(), time.max, tzinfo=fuso)
+# @app.get("/ranking-periodo")
+# def ranking_periodo(
+#     request: Request,
+#     dias: int = Query(7, ge=1, le=31),
+#     session: Session = Depends(get_session),
+# ):
+#     usuario = get_usuario_logado(request, session)
+#     if not usuario:
+#         return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
-    ranking_data = session.exec(
-        select(Usuario.nome, Consumo.quantidade)
-        .join(Consumo, Consumo.usuario_id == Usuario.id)
-        .where(Consumo.data >= inicio, Consumo.data <= fim)
-    ).all()
+#     fuso = ZoneInfo("America/Sao_Paulo")
+#     agora = datetime.now(fuso)
+#     inicio = datetime.combine(agora.date() - timedelta(days=dias - 1), time.min, tzinfo=fuso)
+#     fim = datetime.combine(agora.date(), time.max, tzinfo=fuso)
 
-    ranking_dict = {}
-    for nome, qtd in ranking_data:
-        ranking_dict[nome] = ranking_dict.get(nome, 0) + qtd
+#     ranking_data = session.exec(
+#         select(Usuario.nome, Consumo.quantidade)
+#         .join(Consumo, Consumo.usuario_id == Usuario.id)
+#         .where(Consumo.data >= inicio, Consumo.data <= fim)
+#     ).all()
 
-    ranking = sorted(ranking_dict.items(), key=lambda x: x[1], reverse=True)
+#     ranking_dict = {}
+#     for nome, qtd in ranking_data:
+#         ranking_dict[nome] = ranking_dict.get(nome, 0) + qtd
 
-    return templates.TemplateResponse(
-        request,
-        "ranking_periodo.html",
-        {
-            "request": request,
-            "dias": dias,
-            "ranking": ranking,
-        },
-    )
+#     ranking = sorted(ranking_dict.items(), key=lambda x: x[1], reverse=True)
+
+#     return templates.TemplateResponse(
+#         request,
+#         "ranking_periodo.html",
+#         {
+#             "request": request,
+#             "dias": dias,
+#             "ranking": ranking,
+#         },
+#     )
