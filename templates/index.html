@@ -50,7 +50,7 @@
               ID: {{ consumo.id }} - {{ consumo.quantidade }} ml - {{ consumo.data_formatada }}
               <form method="post" action="/remover-consumo" style="display:inline">
                 <input type="hidden" name="id" value="{{ consumo.id }}">
-                <button class="btn-lixeira" type="submit" onclick="return confirm('Remover este consumo?')" title="Remover">&#128465;</button>
+                <btn-lixeira class="btn-lixeira" type="submit" onclick="return confirm('Remover este consumo?')" title="Remover">🗑</btn-lixeira>
               </form>
             </li>
           {% else %}
