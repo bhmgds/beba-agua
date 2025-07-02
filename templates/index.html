@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -12,7 +12,6 @@
     <div class="logo">
       <!-- Ícone garrafa -->
       <img src="static/favicon.png" width="48" height="48" alt="Garrafa" />
-
       <h4>Beba Água</h4>
     </div>
 
@@ -47,7 +46,13 @@
 
       <ul>
         {% for consumo in consumos %}
-          <li>{{ consumo.quantidade }} ml - {{ consumo.data_formatada }}</li>
+          <li>
+            {{ consumo.quantidade }} ml - {{ consumo.data_formatada }}
+            <form method="post" action="/remover-consumo" style="display:inline">
+              <input type="hidden" name="id" value="{{ consumo.id }}">
+              <button class="btn-lixeira" type="submit" onclick="return confirm('Remover este consumo?')" title="Remover">&#128465;</button>
+            </form>
+          </li>
         {% else %}
           <li>Nenhum registro até agora.</li>
         {% endfor %}

@@ -229,7 +229,13 @@ def historico(request: Request, session: Session = Depends(get_session)):
             "consumos": consumos_diarios_ordenados,
         },
     )
-
+@app.post("/remover-consumo")
+async def remover_consumo(id: int = Form(...), db: Session = Depends(get_session)):
+    consumo = db.query(Consumo).filter(Consumo.id == id).first()
+    if consumo:
+        db.delete(consumo)
+        db.commit()
+    return RedirectResponse(url="/", status_code=303)
 # @app.get("/ranking-periodo")
 # def ranking_periodo(
 #     request: Request,
