@@ -299,7 +299,17 @@ form.logout-form {
 }
 
 .btn-lixeira {
+  background: none;
+  border: none;
+  color: #e53935;
   width: auto;
   padding: 0.25rem 0.5rem;
   font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.btn-lixeira:hover,
+.btn-lixeira:focus {
+  background-color: rgba(229, 57, 53, 0.1);
+  outline: none;
 }
