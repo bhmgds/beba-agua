@@ -193,39 +193,42 @@ def registrar_usuario_post(
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 @app.get("/historico")
-def historico(
-    request: Request,
-    session: Session = Depends(get_session),
-):
+def historico(request: Request, session: Session = Depends(get_session)):
     usuario = get_usuario_logado(request, session)
     if not usuario:
         return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
 
     fuso = ZoneInfo("America/Sao_Paulo")
 
+    # Buscar todos os consumos do usuário, ordenados do mais recente para o mais antigo
     consumos = session.exec(
         select(Consumo)
         .where(Consumo.usuario_id == usuario.id)
-        .order_by(Consumo.data.desc())  # ordena do mais recente para o mais antigo
+        .order_by(Consumo.data.desc())
     ).all()
 
-    consumos_formatados = [
-        {
-            "quantidade": c.quantidade,
-            "data_hora": c.data.astimezone(fuso).strftime("%d/%m/%Y %H:%M")
-        }
-        for c in consumos
+    # Agrupar consumo por data (dia) e somar quantidades
+    consumos_diarios_dict = {}
+    for c in consumos:
+        data_dia = c.data.astimezone(fuso).date()  # pegar só a data, sem hora
+        consumos_diarios_dict[data_dia] = consumos_diarios_dict.get(data_dia, 0) + c.quantidade
+
+    # Transformar em lista de dicionários para enviar pro template
+    consumos_diarios = [
+        {"data": data.strftime("%d/%m/%Y"), "total": total}
+        for data, total in consumos_diarios_dict.items()
     ]
 
+    # Ordenar do mais recente para o mais antigo
+    consumos_diarios_ordenados = sorted(consumos_diarios, key=lambda x: datetime.strptime(x["data"], "%d/%m/%Y"), reverse=True)
+
     return templates.TemplateResponse(
-        request,
         "historico.html",
         {
             "request": request,
-            "consumos": consumos_formatados,
+            "consumos": consumos_diarios_ordenados,
         },
     )
-
 
 # @app.get("/ranking-periodo")
 # def ranking_periodo(
