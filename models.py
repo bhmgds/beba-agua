@@ -7,7 +7,8 @@ class Usuario(SQLModel, table=True):
     nome: str
     email: str
     senha_hash: str
-
+    telefone: Optional[str] = None   # novo campo telefone, opcional
+    
     consumos: List["Consumo"] = Relationship(back_populates="usuario")
 
 class Consumo(SQLModel, table=True):

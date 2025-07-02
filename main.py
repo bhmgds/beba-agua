@@ -71,9 +71,11 @@ def pagina_inicial(request: Request, session: Session = Depends(get_session)):
     consumos_formatados = []
     for consumo in consumos:
         consumos_formatados.append({
+            "id": consumo.id,  # <-- adiciona essa linha
             "quantidade": consumo.quantidade,
             "data_formatada": consumo.data.astimezone(fuso).strftime("%d/%m/%Y %H:%M"),
         })
+
 
     total = sum(c.quantidade for c in consumos)
 
