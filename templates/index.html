@@ -44,19 +44,21 @@
       <h3>Consumo de Hoje — {{ data_hoje }}</h3>
       <p>Total: {{ total }} ml</p>
 
-      <ul>
-        {% for consumo in consumos %}
-          <li>
-            {{ consumo.quantidade }} ml - {{ consumo.data_formatada }}
-            <form method="post" action="/remover-consumo" style="display:inline">
-              <input type="hidden" name="id" value="{{ consumo.id }}">
-              <button class="btn-lixeira" type="submit" onclick="return confirm('Remover este consumo?')" title="Remover">&#128465;</button>
-            </form>
-          </li>
-        {% else %}
-          <li>Nenhum registro até agora.</li>
-        {% endfor %}
-      </ul>
+        <ul>
+          {% for consumo in consumos %}
+            <li>
+              ID: {{ consumo.id }} - {{ consumo.quantidade }} ml - {{ consumo.data_formatada }}
+              <form method="post" action="/remover-consumo" style="display:inline">
+                <input type="hidden" name="id" value="{{ consumo.id }}">
+                <button class="btn-lixeira" type="submit" onclick="return confirm('Remover este consumo?')" title="Remover">&#128465;</button>
+              </form>
+            </li>
+          {% else %}
+            <li>Nenhum registro até agora.</li>
+          {% endfor %}
+        </ul>
+
+
     </section>
 
     <section class="ranking">
