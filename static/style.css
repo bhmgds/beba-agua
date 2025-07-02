@@ -251,11 +251,11 @@ form.logout-form {
   }
 
     /* 👇 Exceção para a lixeirinha */
-  .btn-lixeira {
+  /* .btn-lixeira {
     width: auto;
     padding: 0.25rem 0.5rem;
     font-size: 1.2rem;
-  }
+  } */
 }
 
 @media (max-width: 480px) {
@@ -291,23 +291,21 @@ form.logout-form {
   }
 
     /* 👇 Exceção para a lixeirinha */
-  .btn-lixeira {
+  /* .btn-lixeira {
     width: auto;
     padding: 0.25rem 0.5rem;
-    font-size: 1.2rem;
-  }
+    font-size: 1.2rem; 
+  }*/
 }
 
 .btn-lixeira {
   background: none;
   border: none;
+  color: #e53935;
+  width: auto;
+  padding: 0.25rem 0.5rem;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #e53935;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-  vertical-align: middle;
 }
 
 .btn-lixeira:hover,
