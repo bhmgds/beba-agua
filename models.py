@@ -5,7 +5,7 @@ from datetime import datetime  # ✅ corrigido aqui
 class Usuario(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nome: str
-    email: str
+    email: strp
     senha_hash: str
     telefone: Optional[str] = None   # novo campo telefone, opcional
     
