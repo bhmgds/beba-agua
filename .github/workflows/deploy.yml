@@ -19,7 +19,6 @@ jobs:
           ref: ${{ github.sha }}
           transient_environment: false
           auto_merge: false
-          required_contexts: []
 
       - name: Trigger Render Deploy
         id: trigger_render
@@ -27,7 +26,7 @@ jobs:
         with:
           url: https://api.render.com/deploy/srv-d1iunmh5pdvs73choma0
           method: POST
-          headers:
+          headers: |
             Authorization: Bearer ${{ secrets.RENDER_API_KEY }}
             Content-Type: application/json
 
