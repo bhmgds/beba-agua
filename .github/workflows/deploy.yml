@@ -1,0 +1,57 @@
+name: Deploy to Render with GitHub Deployment and Polling
+
+on:
+  push:
+    branches:
+      - main  # Altere se for outro branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create GitHub Deployment
+        id: create_deployment
+        uses: peter-evans/create-or-update-deployment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: production
+          ref: ${{ github.sha }}
+          transient_environment: false
+          auto_merge: false
+          required_contexts: []
+
+      - name: Trigger Render Deploy
+        id: trigger_render
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: https://api.render.com/deploy/srv-d1iunmh5pdvs73choma0
+          method: POST
+          headers: |
+            Authorization=Bearer ${{ secrets.RENDER_API_KEY }}
+            Content-Type=application/json
+
+      - name: Extract deploy ID from Render response
+        id: extract_deploy_id
+        run: |
+          echo '${{ steps.trigger_render.outputs.response-body }}' > response.json
+          DEPLOY_ID=$(jq -r '.id' response.json)
+          echo "deploy_id=$DEPLOY_ID" >> $GITHUB_OUTPUT
+
+      - name: Poll Render deploy status
+        id: poll_status
+        run: |
+          DEPLOY_ID=${{ steps.extract_deploy_id.outputs.deploy_id }}
+          echo "Polling deploy status for ID: $DEPLOY_ID"
+
+          for i in {1..15}; do
+            RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              https://api.render.com/deploy/${DEPLOY_ID})
+
+            STATE=$(echo "$RESPONSE" | jq -r '.state')
+            echo "Attempt $i: state = $STATE"
+
+            if [[ "$STATE" == "READY" ]]; then
+              echo "Deploy succeeded"
+              echo "deploy_status=success" >> $GITHUB_OUTPUT
+              exit 0

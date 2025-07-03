@@ -17,7 +17,7 @@ Beba Agua é um aplicativo web simples para você e sua esposa acompanharem o co
 - SQLModel com SQLite ou PostgreSQL  
 - Jinja2 para templates HTML  
 - CSS personalizado  
-- Hospedagem no Railway  
+- Hospedagem no Render  
 
 ## Como rodar localmente
 
