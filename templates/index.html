@@ -4,8 +4,59 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Beba Água - Controle Diário</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/style.css?v=1.0.0" />
   <link rel="icon" href="/static/favicon.png" type="image/x-icon" />
+  <style>
+    /* Modal overlay */
+    #modal-confirm {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+    /* Modal content box */
+    #modal-confirm .modal-content {
+      background-color: #fff;
+      padding: 1.5rem 2rem;
+      border-radius: 10px;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    #modal-confirm p {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      color: #212121;
+    }
+    #modal-confirm button {
+      margin: 0 0.5rem;
+      padding: 0.5rem 1.25rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #modal-confirm button.confirm {
+      background-color: #e53935;
+      color: white;
+    }
+    #modal-confirm button.confirm:hover {
+      background-color: #b71c1c;
+    }
+    #modal-confirm button.cancel {
+      background-color: #b0bec5;
+      color: #212121;
+    }
+    #modal-confirm button.cancel:hover {
+      background-color: #90a4ae;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -44,22 +95,19 @@
       <h3>Consumo de Hoje — {{ data_hoje }}</h3>
       <p>Total: {{ total }} ml</p>
 
-        <ul>
-          {% for consumo in consumos %}
-            <li>
-              {{ consumo.quantidade }} ml - {{ consumo.data_formatada }}
-              <form method="post" action="/remover-consumo" style="display:inline">
-                <input type="hidden" name="id" value="{{ consumo.id }}">
-                <button class="btn-lixeira" type="submit" onclick="return confirm('Remover este consumo?')" title="Remover">🗑</button>
-              </form>
-            </li>
-          {% else %}
-            <li>Nenhum registro até agora.</li>
-          {% endfor %}
-        </ul>
-
-
-
+      <ul>
+        {% for consumo in consumos %}
+          <li>
+            {{ consumo.quantidade }} ml - {{ consumo.data_formatada }}
+            <form method="post" action="/remover-consumo" style="display:inline" class="form-remover">
+              <input type="hidden" name="id" value="{{ consumo.id }}">
+              <button class="btn-lixeira" type="button" data-id="{{ consumo.id }}" title="Remover">🗑</button>
+            </form>
+          </li>
+        {% else %}
+          <li>Nenhum registro até agora.</li>
+        {% endfor %}
+      </ul>
     </section>
 
     <section class="ranking">
@@ -78,8 +126,18 @@
     Hidrate-se!
   </footer>
 
+  <!-- Modal de confirmação -->
+  <div id="modal-confirm" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+    <div class="modal-content">
+      <p id="modal-desc">Deseja realmente remover este consumo?</p>
+      <button class="confirm">Sim</button>
+      <button class="cancel">Não</button>
+    </div>
+  </div>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      // Menu hamburguer
       const toggle = document.getElementById("menu-toggle");
       const menu = document.getElementById("menu-content");
 
@@ -98,6 +156,43 @@
 
       menu.addEventListener("click", (e) => {
         e.stopPropagation();
+      });
+
+      // Modal confirmação para remover consumo
+      const modal = document.getElementById("modal-confirm");
+      const confirmBtn = modal.querySelector("button.confirm");
+      const cancelBtn = modal.querySelector("button.cancel");
+      let formParaEnviar = null;
+
+      // Abrir modal ao clicar na lixeira
+      document.querySelectorAll(".btn-lixeira").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          formParaEnviar = btn.closest("form");
+          modal.style.display = "flex";
+        });
+      });
+
+      // Confirmar remoção
+      confirmBtn.addEventListener("click", () => {
+        if (formParaEnviar) {
+          formParaEnviar.submit();
+          formParaEnviar = null;
+          modal.style.display = "none";
+        }
+      });
+
+      // Cancelar remoção
+      cancelBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        formParaEnviar = null;
+      });
+
+      // Fechar modal se clicar fora do conteúdo
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+          formParaEnviar = null;
+        }
       });
     });
   </script>

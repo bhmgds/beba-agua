@@ -1,31 +1,115 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Registrar Usuário - Controle de Água</title>
-    <link rel="stylesheet" href="/static/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrar Usuário - Controle de Água</title>
+  <link rel="stylesheet" href="/static/style.css?v=1.0.1" />
 </head>
-<body><main class="container">
+<body>
+  <main class="container">
     <h1>Criar nova conta</h1>
 
     {% if erro %}
-        <p class="error">{{ erro }}</p>
+      <p class="error">{{ erro }}</p>
     {% endif %}
 
-    <form method="post" action="/registrar-usuario">
-        <label for="nome">Nome:</label>
-        <input type="text" name="nome" id="nome" required />
+    <form id="registroForm" method="post" action="/registrar-usuario" novalidate>
+      <label for="nome">Nome:</label>
+      <input type="text" name="nome" id="nome" required />
 
-        <label for="email">Email:</label>
-        <input type="email" name="email" id="email" required />
+      <label for="email">Email:</label>
+      <input type="email" name="email" id="email" required />
 
-        <label for="senha">Senha:</label>
-        <input type="password" name="senha" id="senha" required />
+      <label for="telefone">Telefone:</label>
+      <div class="telefone-wrapper">
+        <span class="telefone-prefixo">+55</span>
+        <input
+          type="tel"
+          name="telefone"
+          id="telefone"
+          inputmode="numeric"
+          pattern="\(?\d{2}\)?\s?9?\d{4}-?\d{4}"
+          maxlength="15"
+          placeholder="(11) 97681-5877"
+          required
+          title="Digite um telefone válido, ex: (11) 97681-5877"
+        />
+      </div>
+      <p id="telefoneError" class="error" style="display:none;">
+        Telefone inválido. Digite 11 dígitos no formato (11) 97681-5877.
+      </p>
 
-        <button type="submit">Registrar</button>
+      <label for="senha">Senha:</label>
+      <input type="password" name="senha" id="senha" required minlength="6" />
+
+      <button type="submit">Registrar</button>
     </form>
 
-    <p class="links">Já tem uma conta? <a href="/login">Fazer login</a>.</p></main>
+    <p class="links">Já tem uma conta? <a href="/login">Fazer login</a>.</p>
+  </main>
+
+  <script>
+    const form = document.getElementById("registroForm");
+    const telefoneInput = document.getElementById("telefone");
+    const telefoneError = document.getElementById("telefoneError");
+
+    function formatarTelefone(value) {
+      // Remove tudo que não é número
+      const nums = value.replace(/\D/g, "");
+      let formatted = "";
+
+      if (nums.length > 0) {
+        formatted += "(";
+      }
+      if (nums.length >= 1) {
+        formatted += nums.substring(0, 2);
+      }
+      if (nums.length >= 3) {
+        formatted += ") ";
+        formatted += nums.substring(2, 7);
+      }
+      if (nums.length >= 8) {
+        formatted += "-";
+        formatted += nums.substring(7, 11);
+      }
+
+      return formatted;
+    }
+
+    function validarTelefone() {
+      const nums = telefoneInput.value.replace(/\D/g, "");
+      // Deve ter exatamente 11 dígitos (DDD + número)
+      return nums.length === 11;
+    }
+
+    telefoneInput.addEventListener("input", () => {
+      const posicaoCursor = telefoneInput.selectionStart;
+      const valorAntigo = telefoneInput.value;
+
+      telefoneInput.value = formatarTelefone(telefoneInput.value);
+
+      // Mantém o cursor no lugar correto
+      let novaPosicao = posicaoCursor + (telefoneInput.value.length - valorAntigo.length);
+      telefoneInput.setSelectionRange(novaPosicao, novaPosicao);
+
+      if (validarTelefone()) {
+        telefoneError.style.display = "none";
+        telefoneInput.setCustomValidity("");
+      } else {
+        telefoneError.style.display = "block";
+        telefoneInput.setCustomValidity("Telefone inválido");
+      }
+    });
+
+    form.addEventListener("submit", (e) => {
+      if (!validarTelefone()) {
+        e.preventDefault();
+        telefoneError.style.display = "block";
+        telefoneInput.focus();
+        alert("Por favor, digite um telefone válido com 11 dígitos, ex: (11) 97681-5877.");
+      }
+    });
+  </script>
 </body>
 </html>
