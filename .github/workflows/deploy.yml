@@ -10,15 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create GitHub Deployment
+      - name: Create GitHub Deployment (via curl)
         id: create_deployment
-        uses: peter-evans/create-or-update-deployment@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          environment: production
-          ref: ${{ github.sha }}
-          transient_environment: false
-          auto_merge: false
+        run: |
+          DEPLOY_RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/deployments \
+            -d '{"ref":"'"${GITHUB_SHA}"'","environment":"production","transient_environment":false,"auto_merge":false}')
+          echo "$DEPLOY_RESPONSE" > deploy.json
+          DEPLOY_ID=$(jq -r '.id' deploy.json)
+          echo "deployment_id=$DEPLOY_ID" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Trigger Render Deploy
         id: trigger_render
@@ -36,6 +39,7 @@ jobs:
           echo '${{ steps.trigger_render.outputs.response-body }}' > response.json
           DEPLOY_ID=$(jq -r '.id' response.json)
           echo "deploy_id=$DEPLOY_ID" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Poll Render deploy status
         id: poll_status
@@ -67,6 +71,7 @@ jobs:
           echo "Timeout waiting deploy finish"
           echo "deploy_status=failure" >> $GITHUB_OUTPUT
           exit 1
+        shell: bash
 
       - name: Update GitHub Deployment status
         run: |
@@ -84,3 +89,4 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/${{ github.repository }}/deployments/$DEPLOYMENT_ID/statuses \
             -d "{\"state\":\"$STATE\"}"
+        shell: bash
